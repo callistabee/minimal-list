@@ -1,0 +1,10 @@
+{
+  "name": "minimal-list",
+  "version": "0.0.1",
+  "description": "barebones wysiwyg editor for html lists",
+  "main": "src/main.js",
+  "repository": "https://github.com/morae/minimal-list",
+  "author": "Kendall Stewart",
+  "license": "MIT",
+  "private": false
+}
