@@ -60,8 +60,9 @@ export function handleKbEvent(kbEvent) {
             }
             break;
 
+        // prevent the top level list from being deleted
+        case "Enter":
         case "Backspace":
-            // prevent the top level list from being deleted
             if (atListTop(currentNode, editorNode)) {
                 kbEvent.preventDefault();
             }
@@ -71,6 +72,10 @@ export function handleKbEvent(kbEvent) {
             if(kbEvent.ctrlKey) {
                 switchListType(currentNode);
             }
+            break;
+
+        default:
+            break;
     }
 }
 
