@@ -45,6 +45,53 @@ function switchListType(currentNode) {
     window.getSelection().collapse(currentNode, currentOffset);
 }
 
+function handleStrike(node) {
+    const currentOffset = window.getSelection().anchorOffset;
+
+    if (node.nodeName !== "#text") {
+        return;
+    }
+
+    if (node.parentNode.nodeName === "LI") {
+        switchStrikes(node.parentNode, true);
+    } else if(node.parentNode.nodeName === "STRIKE") {
+        switchStrikes(node.parentNode.parentNode, false);
+    }
+
+    window.getSelection().collapse(node, currentOffset);
+}
+
+function switchStrikes(listItem, strikeOn) {
+    // only apply to list items
+    if(listItem.nodeName !== "LI") {
+        return;
+    }
+
+    const text = listItem.firstChild;
+
+    if(strikeOn && text.nodeName === "#text") {
+        const strike = document.createElement("strike");
+        strike.appendChild(text);
+        listItem.appendChild(strike);
+    } else if(!strikeOn && text.nodeName === "STRIKE") {
+        listItem.appendChild(text.firstChild);
+        text.remove();
+    }
+
+    // get sublist
+    listItem.id = "current";
+    const sublist = document.querySelector("#current+ol,#current+ul");
+    listItem.removeAttribute("id");
+
+    if(sublist) {
+        // change strikes in sublist
+        for(let child of sublist.children) {
+            switchStrikes(child, strikeOn);
+        }
+    }
+
+}
+
 function handleKbEvent(kbEvent) {
     const editorNode = this;
     const currentNode = window.getSelection().anchorNode;
@@ -75,6 +122,12 @@ function handleKbEvent(kbEvent) {
         case "l":
             if(kbEvent.ctrlKey) {
                 switchListType(currentNode);
+            }
+            break;
+
+        case "x":
+            if(kbEvent.ctrlKey) {
+                handleStrike(currentNode);
             }
             break;
 
