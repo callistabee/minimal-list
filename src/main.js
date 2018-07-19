@@ -41,7 +41,7 @@ function switchListType(currentNode) {
     listNode.parentNode.replaceChild(newListNode, listNode);
 }
 
-export function handleKbEvent(kbEvent) {
+function handleKbEvent(kbEvent) {
     const editorNode = this;
     const currentNode = window.getSelection().anchorNode;
     switch (kbEvent.key) {
@@ -79,3 +79,12 @@ export function handleKbEvent(kbEvent) {
     }
 }
 
+export default function (selector) {
+    const list = document.createElement("ol");
+    list.appendChild(document.createElement("li"));
+
+    const container = document.querySelector(selector);
+    container.appendChild(list);
+    container.setAttribute("contentEditable", "true");
+    container.addEventListener("keydown", handleKbEvent);
+}
