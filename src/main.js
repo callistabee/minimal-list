@@ -136,12 +136,14 @@ function handleKbEvent(kbEvent) {
     }
 }
 
-export default function (selector) {
-    const list = document.createElement("ol");
-    list.appendChild(document.createElement("li"));
-
+export default function (selector, fresh) {
     const container = document.querySelector(selector);
-    container.appendChild(list);
     container.setAttribute("contentEditable", "true");
     container.addEventListener("keydown", handleKbEvent);
+
+    if (fresh) {
+      const list = document.createElement("ol");
+      list.appendChild(document.createElement("li"));
+      container.appendChild(list);
+    }
 }
