@@ -1,16 +1,23 @@
-function parent(node, levels) {
-    if (levels === 0 || node === null) {
+function containingList(node) {
+    if(!node || node.nodeName === "body") {
+        return null;
+    }
+
+    if(node.nodeName === "UL" || node.nodeName === "OL") {
         return node;
-    } else {
-        return parent(node.parentNode, levels - 1)
+    }
+
+    else {
+        return containingList(node.parentNode);
     }
 }
 
 function atOuterIndent(currentNode) {
-    const outerParent = currentNode.nodeName === "LI"
-                      ? parent(currentNode, 2)
-                      : parent(currentNode, 3);
+    if(currentNode.nodeName === "OL" || currentNode.nodeName === "UL") {
+        return false;
+    }
 
+    const outerParent = containingList(currentNode).parentElement;
     return outerParent != null && outerParent.hasAttribute("contentEditable");
 }
 
@@ -20,15 +27,10 @@ function atListTop(currentNode, editorNode) {
 }
 
 function switchListType(currentNode) {
-    // make sure current node is text or list item
-    const nodeName = currentNode.nodeName;
-    if (nodeName !== "#text" && nodeName !== "LI") {
-        return;
-    }
+    const currentOffset = window.getSelection().anchorOffset;
 
-    const listNode = nodeName === "#text"
-                   ? parent(currentNode, 2)
-                   : parent(currentNode, 1);
+    // make sure current node is text or list item
+    const listNode = containingList(currentNode);
 
     const fragment = document.createDocumentFragment();
     while(listNode.firstChild) {
@@ -39,6 +41,8 @@ function switchListType(currentNode) {
     newListNode.appendChild(fragment);
 
     listNode.parentNode.replaceChild(newListNode, listNode);
+
+    window.getSelection().collapse(currentNode, currentOffset);
 }
 
 function handleKbEvent(kbEvent) {
