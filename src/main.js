@@ -1,15 +1,17 @@
-function containingList(node) {
+function containingElement(node, elementNameList) {
     if(!node || node.nodeName === "body") {
         return null;
     }
 
-    if(node.nodeName === "UL" || node.nodeName === "OL") {
+    if(elementNameList.indexOf(node.nodeName) >= 0) {
         return node;
     }
 
-    else {
-        return containingList(node.parentNode);
-    }
+    return containingElement(node.parentNode, elementNameList);
+}
+
+function containingList(node) {
+    return containingElement(node, ["UL", "OL"]);
 }
 
 function atOuterIndent(currentNode) {
