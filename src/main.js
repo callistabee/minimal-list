@@ -94,7 +94,20 @@ function switchStrikes(listItem, strikeOn) {
 
 }
 
-function handleKbEvent(kbEvent) {
+function handleKeyUp() {
+    const currentNode = window.getSelection().anchorNode;
+
+    let listItem = containingElement(currentNode, ["LI"]);
+    if(listItem) {
+        for (let child of listItem.children) {
+            if (child.nodeName === "BR") {
+                child.remove();
+            }
+        }
+    }
+}
+
+function handleKeyDown(kbEvent) {
     const editorNode = this;
     const currentNode = window.getSelection().anchorNode;
     switch (kbEvent.key) {
@@ -141,11 +154,13 @@ function handleKbEvent(kbEvent) {
 export default function (selector, fresh) {
     const container = document.querySelector(selector);
     container.setAttribute("contentEditable", "true");
-    container.addEventListener("keydown", handleKbEvent);
 
     if (fresh) {
       const list = document.createElement("ol");
       list.appendChild(document.createElement("li"));
       container.appendChild(list);
     }
+
+    container.addEventListener("keydown", handleKeyDown);
+    container.addEventListener("keyup", handleKeyUp)
 }
