@@ -159,6 +159,9 @@ export default function (selector, fresh) {
       const list = document.createElement("ol");
       list.appendChild(document.createElement("li"));
       container.appendChild(list);
+    } else {
+        // normalize existing editor content
+        container.innerHTML = container.innerHTML.replace(/(\r|\n|\r\n)/gm, "");
     }
 
     container.addEventListener("keydown", handleKeyDown);
