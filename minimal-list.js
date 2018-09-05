@@ -95,6 +95,50 @@ const minimalList = (function() {
 
     }
 
+    function isList(node) {
+        return ["UL", "OL"].indexOf(node.nodeName) >= 0;
+    }
+
+    // Replacement for document.execCommand("indent")
+    function indent(node) {
+        const offset = window.getSelection().anchorOffset;
+        const listItem = containingElement(node, ["LI"]);
+
+        const prevSibling = listItem.previousSibling;
+        const nextSibling = listItem.nextSibling;
+
+        // defined in both branches below
+        let newList = undefined;
+
+        // if previous sibling is list, append to that list
+        if (prevSibling && isList(prevSibling)) {
+            prevSibling.appendChild(listItem);
+            newList = prevSibling;
+        }
+
+        // otherwise create new list
+        else {
+            const listNode = containingList(node);
+            const listType = listNode.nodeName;
+            const innerList = document.createElement(listType);
+            listNode.replaceChild(innerList, listItem);
+            innerList.appendChild(listItem);
+            newList = innerList;
+        }
+
+        // if next sibling is list, append its items to current item's new list
+        if (nextSibling && isList(nextSibling)) {
+            while(nextSibling.firstChild) {
+                newList.appendChild(nextSibling.firstChild);
+            }
+            nextSibling.remove();
+        }
+
+        // restore cursor
+        window.getSelection().collapse(node, offset);
+
+    }
+
     function handleKeyUp() {
         const currentNode = window.getSelection().anchorNode;
 
@@ -123,7 +167,7 @@ const minimalList = (function() {
                         document.execCommand("outdent");
                     }
                 } else {
-                    document.execCommand("indent");
+                    indent(currentNode);
                 }
                 break;
 
